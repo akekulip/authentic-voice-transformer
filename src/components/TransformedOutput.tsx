@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, FileText, AlertTriangle } from 'lucide-react';
+import { Copy, FileText, AlertTriangle, Download, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,12 +17,79 @@ const TransformedOutput: React.FC<TransformedOutputProps> = ({ transformedText, 
   const [aiProbability, setAiProbability] = useState<number | null>(null);
   const [aiDetectionLoading, setAiDetectionLoading] = useState(false);
   const [confidenceLevel, setConfidenceLevel] = useState<'high' | 'medium' | 'low' | null>(null);
+  const [savedTexts, setSavedTexts] = useState<string[]>(() => {
+    const saved = localStorage.getItem('savedTransformedTexts');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [loadingProgress, setLoadingProgress] = useState(0);
+
+  // Fake progress bar for better UX during loading
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    
+    if (isLoading) {
+      setLoadingProgress(0);
+      interval = setInterval(() => {
+        setLoadingProgress(prev => {
+          const increment = Math.random() * 15;
+          const newValue = prev + increment;
+          // Cap at 90% to avoid giving false impression of completion
+          return newValue > 90 ? 90 : newValue;
+        });
+      }, 600);
+    } else {
+      setLoadingProgress(100);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+      if (!isLoading) {
+        // Reset to 0 after a delay when loading finishes
+        const timeout = setTimeout(() => setLoadingProgress(0), 1000);
+        return () => clearTimeout(timeout);
+      }
+    };
+  }, [isLoading]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(transformedText);
     toast({
       title: "Copied!",
       description: "Transformed text copied to clipboard.",
+      duration: 2000,
+    });
+  };
+
+  const saveText = () => {
+    if (!transformedText) return;
+    
+    const updatedSavedTexts = [...savedTexts, transformedText];
+    setSavedTexts(updatedSavedTexts);
+    localStorage.setItem('savedTransformedTexts', JSON.stringify(updatedSavedTexts));
+    
+    toast({
+      title: "Saved!",
+      description: "Text saved to your local collection.",
+      duration: 2000,
+    });
+  };
+
+  const downloadAsTextFile = () => {
+    if (!transformedText) return;
+    
+    const blob = new Blob([transformedText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `humanized-text-${new Date().toISOString().slice(0, 10)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Downloaded!",
+      description: "Text file has been downloaded.",
       duration: 2000,
     });
   };
@@ -116,6 +183,24 @@ const TransformedOutput: React.FC<TransformedOutputProps> = ({ transformedText, 
     );
   };
 
+  // Calculate statistics about the text
+  const getTextStatistics = () => {
+    if (!transformedText) return null;
+    
+    const words = transformedText.trim().split(/\s+/).length;
+    const sentences = transformedText.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+    const paragraphs = transformedText.split(/\n\s*\n/).filter(p => p.trim().length > 0).length;
+    
+    return (
+      <div className="flex space-x-3 text-xs text-gray-500 mt-2">
+        <div>{transformedText.length} characters</div>
+        <div>{words} words</div>
+        <div>{sentences} sentences</div>
+        <div>{paragraphs} paragraphs</div>
+      </div>
+    );
+  };
+
   return (
     <Card className="h-full shadow-md animate-fade-in">
       <CardHeader className="bg-purple-light/30 pb-2 flex flex-row items-center justify-between">
@@ -128,18 +213,45 @@ const TransformedOutput: React.FC<TransformedOutputProps> = ({ transformedText, 
             </div>
           )}
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={copyToClipboard} 
-          disabled={!transformedText || isLoading}
-          className="h-8 px-2"
-        >
-          <Copy className="h-4 w-4 mr-1" />
-          Copy
-        </Button>
+        <div className="flex gap-1">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={saveText} 
+            disabled={!transformedText || isLoading}
+            className="h-8 px-2"
+            title="Save to collection"
+          >
+            <Save className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={downloadAsTextFile} 
+            disabled={!transformedText || isLoading}
+            className="h-8 px-2"
+            title="Download as text file"
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={copyToClipboard} 
+            disabled={!transformedText || isLoading}
+            className="h-8 px-2"
+            title="Copy to clipboard"
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="p-3">
+        {loadingProgress > 0 && (
+          <div className="w-full mb-2">
+            <Progress value={loadingProgress} className="h-1" />
+          </div>
+        )}
         <div className="min-h-[400px] p-3 rounded-md bg-white border text-sm leading-relaxed overflow-auto">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
@@ -148,6 +260,7 @@ const TransformedOutput: React.FC<TransformedOutputProps> = ({ transformedText, 
           ) : transformedText ? (
             <>
               {transformedText}
+              {getTextStatistics()}
               {aiProbability !== null && (
                 <div className="mt-4 pt-4 border-t">
                   <div className="flex items-center justify-between mb-2">

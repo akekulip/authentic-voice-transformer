@@ -4,6 +4,7 @@ import TextInput from '@/components/TextInput';
 import ToneSelector, { ToneType } from '@/components/ToneSelector';
 import TransformedOutput from '@/components/TransformedOutput';
 import FeedbackButtons from '@/components/FeedbackButtons';
+import SavedTransforms from '@/components/SavedTransforms';
 import { Button } from '@/components/ui/button';
 import { transformText } from '@/utils/transformText';
 import { Wand2 } from 'lucide-react';
@@ -96,10 +97,13 @@ const Index = () => {
         
         <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ToneSelector
-              matchOriginalTone={matchOriginalTone}
-              onMatchOriginalToneChange={setMatchOriginalTone}
-            />
+            <div className="flex items-center">
+              <ToneSelector
+                matchOriginalTone={matchOriginalTone}
+                onMatchOriginalToneChange={setMatchOriginalTone}
+              />
+              <SavedTransforms />
+            </div>
             
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <Button 
