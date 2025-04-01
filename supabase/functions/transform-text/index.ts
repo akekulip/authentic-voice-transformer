@@ -16,7 +16,7 @@ serve(async (req) => {
   }
 
   try {
-    const { text, tone, matchOriginalTone } = await req.json();
+    const { text, tone, matchOriginalTone, preserveCitations } = await req.json();
 
     if (!text || !text.trim()) {
       return new Response(
@@ -25,7 +25,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Processing text transformation: tone=${tone}, matchOriginalTone=${matchOriginalTone}`);
+    console.log(`Processing text transformation: tone=${tone}, matchOriginalTone=${matchOriginalTone}, preserveCitations=${preserveCitations}`);
     console.log(`Text length: ${text.length} characters`);
 
     if (!openAIApiKey) {
@@ -36,84 +36,72 @@ serve(async (req) => {
       );
     }
 
-    // Enhanced system message with more specific instructions on humanization techniques
-    let systemMessage = `You are an expert at transforming text to sound 100% human-written. `;
+    // Enhanced system message with instructions for formal academic tone
+    let systemMessage = `You are an expert at transforming text to sound authentically human-written in a formal academic style while preserving the academic integrity. `;
     
     if (matchOriginalTone) {
-      systemMessage += `Make subtle refinements to make the text sound more natural and genuinely human-written while preserving the original tone. `;
+      systemMessage += `Make subtle refinements to make the text sound more natural and genuinely human-written while preserving the original tone and academic structure. `;
       systemMessage += `The changes should maintain the original style and formality level while adding human elements.`;
     } else {
-      systemMessage += `Transform the following text to sound genuinely human-written in a ${tone} tone. `;
+      systemMessage += `Transform the following text to sound genuinely human-written in a formal academic tone. `;
       
-      switch (tone) {
-        case 'casual':
-          systemMessage += `Use a relaxed, conversational style with natural contractions and varied vocabulary. Include occasional filler words, self-corrections, or tangents as a real person would.`;
-          break;
-        case 'professional':
-          systemMessage += `Create professional content with scholarly elements while maintaining human qualities. To sound authentic:
-          - Maintain appropriate formal language but with minor natural variations
-          - Structure arguments with clear topic sentences but vary paragraph structure naturally
-          - Use conditional language appropriately ("may suggest," "appears to indicate")
-          - Incorporate phrases like "The findings demonstrate" sparingly
-          - Include occasional first-person plurals in appropriate contexts ("we can observe")
-          - Vary sentence complexity - mix complex sentences with occasional simpler ones
-          - Use passive voice strategically but not excessively
-          - Include natural transitions between paragraphs that don't feel formulaic
-          - IMPORTANT: DO NOT add citations, references, or attributions that weren't in the original text`;
-          break;
-        case 'empathetic':
-          systemMessage += `Use a warm, understanding tone with natural fluctuations in empathy. Include thoughtful pauses, reflective questions, and personal touches.`;
-          break;
-        case 'witty':
-          systemMessage += `Add clever observations and light humor with a natural flow. Include occasional tangential thoughts or witty asides that real humans naturally make.`;
-          break;
-        case 'friendly':
-          systemMessage += `Write conversationally as if speaking to a friend, with warm tone, natural asides, and references that make the text feel like a real person-to-person interaction.`;
-          break;
-        default:
-          systemMessage += `Make it sound natural and distinctly human with varied sentence patterns and word choices.`;
-      }
+      systemMessage += `Create scholarly content with academic elements while maintaining human qualities. To sound authentic:
+      - Maintain appropriate formal language but with minor natural variations
+      - Structure arguments with clear topic sentences but vary paragraph structure naturally
+      - Use conditional language appropriately ("may suggest," "appears to indicate")
+      - Incorporate scholarly phrases like "The findings demonstrate" where appropriate
+      - Include occasional first-person plurals in appropriate contexts ("we can observe")
+      - Vary sentence complexity - mix complex sentences with occasional simpler ones
+      - Use passive voice strategically but not excessively
+      - Include natural transitions between paragraphs that don't feel formulaic`;
     }
+    
+    // Citation handling instructions
+    systemMessage += `
+    CRITICAL INSTRUCTIONS FOR CITATIONS:
+    - PRESERVE ALL EXISTING CITATIONS from the original text exactly as they appear (e.g., Smith et al., 2019)
+    - DO NOT ADD ANY NEW CITATIONS that weren't in the original text
+    - DO NOT INVENT OR FABRICATE any references or sources
+    - If the original text has in-text citations like (Smith, 2020) or [1], maintain them in their exact format
+    - If the original text has no citations, do not add any`;
 
     // Significantly enhanced humanization instructions
     systemMessage += ` 
-    CRITICAL REQUIREMENTS to ensure this text passes ALL AI detection tools:
+    CRITICAL REQUIREMENTS to ensure this text passes ALL AI detection tools while maintaining academic integrity:
     
     1. SENTENCE TRANSFORMATION: 
-       - Actively rephrase complete sentences into different structures. For example, change "AI detection is a problem. Many writers face it." into "Many writers struggle with the problem of AI detection."
-       - Introduce sentence fragments occasionally - real humans don't always write complete sentences
-       - Vary sentence openings aggressively - analyze and ensure diverse starting words
-       - Connect ideas in unpredictable ways using conjunctions like "yet", "although", or "meanwhile"
+       - Actively rephrase complete sentences into different academic structures
+       - Vary sentence openings and length within formal academic standards
+       - Connect ideas using scholarly transitional phrases
+       - Maintain academic precision while varying expression
     
     2. VOCABULARY SUBSTITUTION: 
-       - Replace predictable terms with unexpected synonyms or colloquial alternatives
-       - Mix formal words with casual expressions, even in professional writing (humans are inconsistent)
-       - Introduce minor typos or word choice quirks that a human might make (1-2 per lengthy text)
-       - Avoid academic/essay-style phrasing that AI typically produces
+       - Replace predictable terms with unexpected but academically appropriate alternatives
+       - Avoid overly formulaic academic phrasing that AI typically produces
+       - Introduce minor variations in word choice that a human academic might make
+       - Keep specialized terminology consistent
     
     3. PATTERN DISRUPTION:
-       - Create deliberately uneven paragraph lengths
-       - Insert mid-sentence dashes, parenthetical thoughts, or even ellipses...just like a person might
-       - Occasionally use subtle emphasis markers like italics or ALL CAPS for a word or phrase
-       - Break expected writing patterns by occasionally asking a question or making an exclamation
+       - Create deliberately varied paragraph lengths that still adhere to academic standards
+       - Include appropriate use of em-dashes, semicolons, and parenthetical statements
+       - Break expected writing patterns while maintaining scholarly tone
+       - Use occasional rhetorical questions when appropriate in academic context
     
     4. HUMAN VOICE ELEMENTS:
-       - Add personal perspective markers like "honestly," "I'd say," or "in my experience" 
-       - Insert conversational hedges like "sort of" or "kind of" even in professional contexts
-       - Include small thinking-out-loud moments ("now that I think about it...")
-       - Express mild uncertainty or reconsideration of points made earlier
+       - Add subtle perspective markers appropriate in academic writing
+       - Include scholarly hedging like "it appears that" or "evidence suggests"
+       - Express measured qualification of points made earlier
+       - Incorporate thoughtful nuance in arguments
     
-    5. AUTHENTIC IRREGULARITIES:
-       - Create minor logical inconsistencies that reflect human thought processes
-       - Use informal punctuation occasionally, like dashes instead of semicolons
-       - Include subtle self-corrections or refinements of earlier statements
-       - Allow some natural repetition of ideas but with different phrasing
+    5. AUTHENTIC ACADEMIC IRREGULARITIES:
+       - Create minor logical progressions that reflect human thought processes
+       - Allow some natural repetition of key concepts with different phrasing
+       - Include occasional self-references to previous points in the text
+       - Maintain formal tone while introducing subtle variations in style
     
     6. LENGTH CONTROL: Keep the transformed text within 5% of the original text's length to avoid detection.
     
-    7. DO NOT ADD CITATIONS NOT IN THE ORIGINAL TEXT. If the original text doesn't include citations, don't add them.
-    
-    The text MUST appear to be written by a human, with all the natural irregularities and variations that entails. DO NOT explain or comment on your transformations - return ONLY the transformed text.`;
+    The text MUST appear to be written by a human academic, with all the natural irregularities and variations that entails while maintaining scholarly standards. DO NOT explain or comment on your transformations - return ONLY the transformed text.`;
 
     console.log("Sending request to OpenAI");
 
@@ -130,10 +118,10 @@ serve(async (req) => {
           { role: 'system', content: systemMessage },
           { role: 'user', content: text }
         ],
-        temperature: 0.95, // Higher temperature for more creativity and unpredictability
-        top_p: 0.95, // Allows for more diverse word selection
-        presence_penalty: 0.8, // Stronger penalty to discourage repetitive patterns
-        frequency_penalty: 0.9, // Stronger penalty to discourage using the same phrases
+        temperature: 0.85, // Balanced temperature for academic writing (natural but not too creative)
+        top_p: 0.92, // Slightly more diverse word selection while maintaining formality
+        presence_penalty: 0.7, // Moderate penalty to discourage repetitive patterns
+        frequency_penalty: 0.8, // Moderate penalty to discourage using the same phrases
       }),
     });
 

@@ -13,7 +13,7 @@ import { toast } from '@/hooks/use-toast';
 const Index = () => {
   const [originalText, setOriginalText] = useState('');
   const [transformedText, setTransformedText] = useState('');
-  const [tone, setTone] = useState<ToneType>('professional'); // Changed default to professional
+  const [tone, setTone] = useState<ToneType>('formal');
   const [matchOriginalTone, setMatchOriginalTone] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasFeedback, setHasFeedback] = useState(false);
@@ -45,7 +45,7 @@ const Index = () => {
       setTransformedText(result);
       toast({
         title: "Transformation complete!",
-        description: "Your text has been transformed with natural human variation to bypass AI detection.",
+        description: "Your text has been transformed while preserving academic tone and original citations.",
       });
       console.log('Text transformation completed successfully.');
     } catch (error) {
@@ -72,10 +72,10 @@ const Index = () => {
         <div className="container mx-auto py-6">
           <div className="flex flex-col items-center justify-center text-center">
             <h1 className="text-3xl font-bold text-purple-dark">
-              Text Humanizer
+              Academic Text Humanizer
             </h1>
             <p className="mt-2 text-gray-600 max-w-2xl">
-              Transform AI-generated text into 100% human-sounding content that bypasses AI detection
+              Transform AI-generated text into human-sounding academic content while preserving original citations
             </p>
           </div>
         </div>
@@ -98,8 +98,6 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-center">
               <ToneSelector
-                tone={tone}
-                onToneChange={setTone}
                 matchOriginalTone={matchOriginalTone}
                 onMatchOriginalToneChange={setMatchOriginalTone}
               />
@@ -127,7 +125,7 @@ const Index = () => {
 
       <footer className="bg-white border-t mt-auto">
         <div className="container mx-auto py-6 text-center text-sm text-gray-500">
-          <p>Text Humanizer • Make your content sound authentically human</p>
+          <p>Academic Text Humanizer • Maintain scholarly tone with human authenticity</p>
         </div>
       </footer>
     </div>

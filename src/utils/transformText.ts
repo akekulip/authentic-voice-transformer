@@ -14,7 +14,7 @@ export const transformText = async (
     console.log(`Calling transform-text function with: tone=${tone}, matchOriginalTone=${matchOriginalTone}`);
     
     const { data, error } = await supabase.functions.invoke('transform-text', {
-      body: { text, tone, matchOriginalTone }
+      body: { text, tone, matchOriginalTone, preserveCitations: true }
     });
     
     if (error) {
