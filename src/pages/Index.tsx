@@ -43,8 +43,8 @@ const Index = () => {
       const result = await transformText(originalText, selectedTone, matchOriginalTone);
       setTransformedText(result);
       toast({
-        title: "Success!",
-        description: "Your text has been transformed to sound 100% human-written.",
+        title: "Transformation complete!",
+        description: "Your text has been transformed to sound 100% human-written with natural variations.",
       });
       console.log('Text transformation completed successfully.');
     } catch (error) {
@@ -74,7 +74,7 @@ const Index = () => {
               Authentic Voice Transformer
             </h1>
             <p className="mt-2 text-gray-600 max-w-2xl">
-              Transform AI-generated, formal, or robotic text into 100% human-sounding content that passes AI detection
+              Transform AI-generated text into 100% human-sounding content with natural variations that passes AI detection
             </p>
           </div>
         </div>
@@ -123,7 +123,7 @@ const Index = () => {
 
       <footer className="bg-white border-t mt-auto">
         <div className="container mx-auto py-6 text-center text-sm text-gray-500">
-          <p>Authentic Voice Transformer • Make your content sound 100% human</p>
+          <p>Authentic Voice Transformer • Make your content sound 100% human with natural variations</p>
         </div>
       </footer>
     </div>

@@ -36,48 +36,56 @@ serve(async (req) => {
       );
     }
 
-    // Enhanced system message for more human-like text
-    let systemMessage = `You are an expert at transforming text to sound 100% human-written while maintaining approximately the same length as the original text. `;
+    // Enhanced system message focused on human-like variation
+    let systemMessage = `You are an expert at transforming text to sound 100% human-written. `;
     
     if (matchOriginalTone) {
       systemMessage += `Make subtle refinements to make the text sound more natural and genuinely human-written while preserving the original tone. `;
-      systemMessage += `The changes should be minimal yet effective, maintaining the original style, length and formality level.`;
+      systemMessage += `The changes should maintain the original style and formality level while adding human elements.`;
     } else {
-      systemMessage += `Transform the following text to sound genuinely human-written in a ${tone} tone while keeping approximately the same length. `;
+      systemMessage += `Transform the following text to sound genuinely human-written in a ${tone} tone. `;
       
       switch (tone) {
         case 'casual':
-          systemMessage += `Use contractions, simpler vocabulary, a relaxed structure, and occasional conversational fillers (um, like, you know) where appropriate. Add human imperfections and varied sentence patterns.`;
+          systemMessage += `Use a relaxed, conversational style with natural contractions and varied vocabulary. Include occasional filler words, self-corrections, or tangents as a real person would.`;
           break;
         case 'professional':
-          systemMessage += `Maintain a business-appropriate tone with clear language, but add subtle human touches. Vary sentence length, use transitional phrases naturally, and include occasional parenthetical expressions.`;
+          systemMessage += `Maintain a business-appropriate tone but with natural human touches like varied sentence structures, occasional parenthetical thoughts, and more organic transitions between ideas.`;
           break;
         case 'empathetic':
-          systemMessage += `Use warm, understanding language that acknowledges emotions with natural variations in emphasis. Include thoughtful pauses, reflective questions, and personal touches that a real human would use.`;
+          systemMessage += `Use a warm, understanding tone with natural fluctuations in empathy. Include thoughtful pauses, reflective questions, and personal touches.`;
           break;
         case 'witty':
-          systemMessage += `Add clever wordplay, light humor, and engaging expressions that sound natural, not forced. Include occasional tangential thoughts or asides that a witty person might actually make.`;
+          systemMessage += `Add clever observations and light humor with a natural flow. Include occasional tangential thoughts or witty asides that real humans naturally make.`;
           break;
         case 'friendly':
-          systemMessage += `Write as if speaking to a friend, with a warm tone, using colloquialisms, personal anecdotes, and references that make the text feel like a real conversation.`;
+          systemMessage += `Write conversationally as if speaking to a friend, with warm tone, natural asides, and references that make the text feel like a real person-to-person interaction.`;
           break;
         default:
-          systemMessage += `Make it sound natural, conversational and distinctly human.`;
+          systemMessage += `Make it sound natural and distinctly human with varied sentence patterns and word choices.`;
       }
     }
 
-    // Additional instructions for human-like qualities and avoiding AI detection
+    // Critical instructions for human-like qualities to bypass AI detection
     systemMessage += ` 
-    Important: The transformed text MUST pass AI detection tools and appear 100% human-written:
-    1. Vary sentence structure, length, and complexity naturally (short, medium, and long)
-    2. Include subtle human inconsistencies and imperfections (occasional wordiness, thoughtful pauses, self-corrections)
-    3. Use natural speech patterns with contractions, fillers, and conversational connectors
-    4. Avoid perfectly balanced arguments and overly consistent paragraph structures
-    5. Include conversational touches like rhetorical questions, personal opinions, or light digressions
-    6. Maintain the approximate original text length (±10%)
-    7. Add personality through occasional idioms, analogies, or cultural references when appropriate
+    CRITICAL REQUIREMENTS to ensure this text passes ALL AI detection tools:
     
-    Return ONLY the transformed text without any explanations, introductions, or commentary.`;
+    1. SENTENCE STRUCTURE: Create irregular, unpredictable variation in sentence length and structure. Mix short, punchy sentences with medium ones and occasionally longer, more complex ones with natural asides or parenthetical thoughts.
+    
+    2. VOCABULARY: Use less predictable word choices that still fit the context. Avoid perfectly precise vocabulary in favor of more natural alternatives. Include occasional casual or slightly imprecise phrasing that's common in human writing.
+    
+    3. RHYTHM VARIATION: Deliberately break patterns that AI tends to create. Vary paragraph structures, transition words, and punctuation styles in unpredictable ways. Avoid repeating syntactic patterns.
+    
+    4. HUMAN IMPERFECTIONS: Introduce subtle natural elements like:
+       - Occasional wordiness where a human might elaborate unnecessarily
+       - Natural self-referential phrases ("I think," "In my opinion," etc.) where appropriate
+       - Subtle opinion shifts or slight contradictions that humans naturally make
+       - Light digressions or tangential thoughts
+       - Conversational bridges between ideas ("anyway," "so," "now," etc.)
+    
+    5. LENGTH MATCHING: Keep the transformed text within 5% of the original text's length.
+    
+    The text MUST read as if written by a human hand, not an AI. Return ONLY the transformed text without any explanations.`;
 
     console.log("Sending request to OpenAI");
 
@@ -94,9 +102,10 @@ serve(async (req) => {
           { role: 'system', content: systemMessage },
           { role: 'user', content: text }
         ],
-        temperature: matchOriginalTone ? 0.7 : 0.9, // Higher temperature for more creativity and human-like variations
-        presence_penalty: 0.2, // Slight penalty to discourage repetitive patterns
-        frequency_penalty: 0.3, // Discourages using the same phrases too often
+        temperature: 0.9, // Higher temperature for more creativity and human-like variations
+        top_p: 0.9, // Allows for more diverse word selection
+        presence_penalty: 0.6, // Stronger penalty to discourage repetitive patterns
+        frequency_penalty: 0.7, // Stronger penalty to discourage using the same phrases
       }),
     });
 
@@ -109,8 +118,16 @@ serve(async (req) => {
     const data = await response.json();
     const transformedText = data.choices[0].message.content.trim();
     
+    // Verify length similarity
+    const lengthDifference = Math.abs(text.length - transformedText.length);
+    const percentDifference = (lengthDifference / text.length) * 100;
+    
     console.log(`Successfully transformed text. Original length: ${text.length}, New length: ${transformedText.length}`);
-    console.log(`Length difference: ${Math.abs(text.length - transformedText.length)} characters (${Math.round(Math.abs(text.length - transformedText.length) / text.length * 100)}%)`);
+    console.log(`Length difference: ${lengthDifference} characters (${percentDifference.toFixed(1)}%)`);
+
+    if (percentDifference > 10) {
+      console.warn(`Warning: Length difference exceeds 10% (${percentDifference.toFixed(1)}%)`);
+    }
 
     return new Response(
       JSON.stringify({ transformedText }),

@@ -41,11 +41,11 @@ export const transformText = async (
     const lengthDifference = Math.abs(text.length - data.transformedText.length);
     const percentDifference = (lengthDifference / text.length) * 100;
     
-    if (percentDifference > 15) {
-      console.warn(`Warning: Transformed text length differs significantly from original (${percentDifference.toFixed(2)}% difference)`);
+    if (percentDifference > 10) {
+      console.warn(`Warning: Transformed text length differs by ${percentDifference.toFixed(1)}% from original`);
       toast({
-        title: "Length Warning",
-        description: "The transformed text length differs significantly from the original. This might be noticeable.",
+        title: "Length Difference",
+        description: `The transformed text length differs by ${percentDifference.toFixed(1)}% from the original.`,
         variant: "default",
       });
     }
