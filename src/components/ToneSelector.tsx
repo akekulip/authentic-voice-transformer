@@ -22,7 +22,7 @@ const ToneSelector: React.FC<ToneSelectorProps> = ({
   onMatchOriginalToneChange,
 }) => {
   const toneDescriptions = {
-    professional: "Academic style with proper scholarly tone",
+    professional: "Formal and structured academic style without adding citations",
     casual: "Relaxed, conversational style with natural flow",
     friendly: "Warm tone as if speaking to a friend",
     witty: "Clever with subtle humor and personality",

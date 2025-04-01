@@ -50,7 +50,7 @@ serve(async (req) => {
           systemMessage += `Use a relaxed, conversational style with natural contractions and varied vocabulary. Include occasional filler words, self-corrections, or tangents as a real person would.`;
           break;
         case 'professional':
-          systemMessage += `Create professional content with proper elements while maintaining human qualities. To sound authentic:
+          systemMessage += `Create professional content with scholarly elements while maintaining human qualities. To sound authentic:
           - Maintain appropriate formal language but with minor natural variations
           - Structure arguments with clear topic sentences but vary paragraph structure naturally
           - Use conditional language appropriately ("may suggest," "appears to indicate")
@@ -58,7 +58,8 @@ serve(async (req) => {
           - Include occasional first-person plurals in appropriate contexts ("we can observe")
           - Vary sentence complexity - mix complex sentences with occasional simpler ones
           - Use passive voice strategically but not excessively
-          - Include natural transitions between paragraphs that don't feel formulaic`;
+          - Include natural transitions between paragraphs that don't feel formulaic
+          - IMPORTANT: DO NOT add citations, references, or attributions that weren't in the original text`;
           break;
         case 'empathetic':
           systemMessage += `Use a warm, understanding tone with natural fluctuations in empathy. Include thoughtful pauses, reflective questions, and personal touches.`;

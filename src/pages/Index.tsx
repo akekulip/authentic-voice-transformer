@@ -13,7 +13,7 @@ import { toast } from '@/hooks/use-toast';
 const Index = () => {
   const [originalText, setOriginalText] = useState('');
   const [transformedText, setTransformedText] = useState('');
-  const [tone, setTone] = useState<ToneType>('casual');
+  const [tone, setTone] = useState<ToneType>('professional'); // Changed default to professional
   const [matchOriginalTone, setMatchOriginalTone] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasFeedback, setHasFeedback] = useState(false);

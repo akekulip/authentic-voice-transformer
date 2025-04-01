@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,11 +40,10 @@ const TransformedOutput: React.FC<TransformedOutputProps> = ({ transformedText, 
       setLoadingProgress(100);
     }
 
-    // Cleanup function
+    // Simplified cleanup function that returns void
     return () => {
       if (interval) clearInterval(interval);
       if (!isLoading) {
-        // This setTimeout doesn't need to return anything
         setTimeout(() => setLoadingProgress(0), 1000);
       }
     };
@@ -93,7 +91,7 @@ const TransformedOutput: React.FC<TransformedOutputProps> = ({ transformedText, 
       duration: 2000,
     });
   };
-  
+
   useEffect(() => {
     // Reset AI detection when new text is transformed
     if (transformedText && !isLoading) {
