@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -92,12 +93,6 @@ const TransformedOutput: React.FC<TransformedOutputProps> = ({ transformedText, 
       duration: 2000,
     });
   };
-
-  // Check if text likely contains citations (simple heuristic)
-  const containsCitations = transformedText && 
-    (/\(\d{4}\)/.test(transformedText) || // Pattern like (2022)
-     /et al\.,? \d{4}/.test(transformedText) || // Pattern like et al., 2022
-     /\([^)]+, \d{4}[^)]*\)/.test(transformedText)); // Pattern like (Smith, 2022)
   
   useEffect(() => {
     // Reset AI detection when new text is transformed
@@ -205,12 +200,6 @@ const TransformedOutput: React.FC<TransformedOutputProps> = ({ transformedText, 
       <CardHeader className="bg-purple-light/30 pb-2 flex flex-row items-center justify-between">
         <div className="flex items-center">
           <CardTitle className="text-lg font-medium text-purple-dark">Humanized Text</CardTitle>
-          {containsCitations && transformedText && (
-            <div className="ml-2 px-2 py-0.5 bg-purple/20 text-purple text-xs rounded-full flex items-center">
-              <FileText className="h-3 w-3 mr-1" />
-              APA Style
-            </div>
-          )}
         </div>
         <div className="flex gap-1">
           <Button 
