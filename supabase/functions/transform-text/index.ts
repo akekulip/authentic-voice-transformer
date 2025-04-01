@@ -50,16 +50,17 @@ serve(async (req) => {
           systemMessage += `Use a relaxed, conversational style with natural contractions and varied vocabulary. Include occasional filler words, self-corrections, or tangents as a real person would.`;
           break;
         case 'professional':
-          systemMessage += `Create business-appropriate content but with NATURAL human touches. AVOID overly formal language that AI typically produces. Instead:
-          - Mix in occasional first-person perspectives ("I believe" or "In my view")
-          - Use varied sentence lengths, including some shorter ones
-          - Include some slightly imperfect transitions between ideas (like people really write)
-          - Use parenthetical asides for supplementary thoughts
-          - Introduce occasional casual phrases among the professional language
-          - Avoid perfect parallelism in lists and structure
-          - Occasionally start sentences with conjunctions (But, And, So)
-          - Use contractions inconsistently (sometimes do, sometimes don't)
-          - Vary your paragraph lengths unpredictably`;
+          systemMessage += `Create academic/professional content with proper scholarly elements while maintaining human qualities. To sound authentic:
+          - Maintain appropriate formal language but with minor natural variations
+          - Include proper APA in-text citations where relevant (e.g., "According to Smith (2020)..." or "...has been demonstrated in multiple studies (Johnson, 2018; Lee & Kim, 2019)")
+          - Structure arguments with clear topic sentences but vary paragraph structure naturally
+          - Use conditional language appropriately ("may suggest," "appears to indicate")
+          - Incorporate academic phrases like "The findings demonstrate" or "Previous research suggests" sparingly
+          - Include occasional first-person plurals in appropriate contexts ("we can observe")
+          - Vary sentence complexity - mix complex sentences with occasional simpler ones
+          - Use passive voice strategically but not excessively
+          - Include natural transitions between paragraphs that don't feel formulaic
+          - Maintain consistent citation style throughout but with slight natural variations`;
           break;
         case 'empathetic':
           systemMessage += `Use a warm, understanding tone with natural fluctuations in empathy. Include thoughtful pauses, reflective questions, and personal touches.`;
@@ -110,6 +111,15 @@ serve(async (req) => {
        - Allow some natural repetition of ideas but with different phrasing
     
     6. LENGTH CONTROL: Keep the transformed text within 5% of the original text's length to avoid detection.
+    
+    7. CITATION HANDLING FOR ACADEMIC/PROFESSIONAL WRITING:
+       - If the text mentions research or statistics, add proper in-text citations in APA format (e.g., "Smith (2019) argued that..." or "...has been demonstrated (Johnson et al., 2020)")
+       - For academic writing, maintain appropriate citation density (roughly 1-2 citations per paragraph)
+       - Vary citation placement naturally - sometimes at beginning of statements, sometimes at end
+       - Include occasional citation clusters for related research (e.g., "Several studies have examined this phenomenon (Brown, 2018; Davis & Miller, 2019; Wang et al., 2020)")
+       - For any specific claims, statistics or direct ideas from sources, ensure proper attribution
+       - If year is missing from original citations, use plausible recent years (2018-2023)
+       - When direct quotes appear, ensure proper APA formatting with quotation marks, page numbers when available (e.g., "as Smith (2020) stated, '...' (p. 45)")
     
     The text MUST appear to be written by a human, with all the natural irregularities and variations that entails. DO NOT explain or comment on your transformations - return ONLY the transformed text.`;
 

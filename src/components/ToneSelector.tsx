@@ -3,6 +3,8 @@ import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { InfoIcon } from 'lucide-react';
 
 export type ToneType = 'casual' | 'professional' | 'empathetic' | 'witty' | 'friendly';
 
@@ -19,26 +21,37 @@ const ToneSelector: React.FC<ToneSelectorProps> = ({
   onToneSelect,
   onMatchOriginalToneChange,
 }) => {
+  const toneDescriptions = {
+    casual: "Relaxed, conversational style with natural language",
+    professional: "Academic style with proper APA citations and scholarly tone",
+    empathetic: "Warm, understanding tone with thoughtful reflection",
+    witty: "Clever observations with light humor and natural flow",
+    friendly: "Conversational as if speaking to a friend"
+  };
+
   return (
     <div className="space-y-4 animate-slide-up">
       <div>
         <Label className="text-sm font-medium mb-2 block">Select Tone</Label>
         <ToggleGroup type="single" value={selectedTone} onValueChange={(value) => value && onToneSelect(value as ToneType)}>
-          <ToggleGroupItem value="casual" className="relative bg-tone-casual/20 hover:bg-tone-casual/40 data-[state=on]:bg-tone-casual">
-            Casual
-          </ToggleGroupItem>
-          <ToggleGroupItem value="professional" className="relative bg-tone-professional/20 hover:bg-tone-professional/40 data-[state=on]:bg-tone-professional">
-            Professional
-          </ToggleGroupItem>
-          <ToggleGroupItem value="empathetic" className="relative bg-tone-empathetic/20 hover:bg-tone-empathetic/40 data-[state=on]:bg-tone-empathetic">
-            Empathetic
-          </ToggleGroupItem>
-          <ToggleGroupItem value="witty" className="relative bg-tone-witty/20 hover:bg-tone-witty/40 data-[state=on]:bg-tone-witty">
-            Witty
-          </ToggleGroupItem>
-          <ToggleGroupItem value="friendly" className="relative bg-tone-friendly/20 hover:bg-tone-friendly/40 data-[state=on]:bg-tone-friendly">
-            Friendly
-          </ToggleGroupItem>
+          {Object.entries(toneDescriptions).map(([tone, description]) => (
+            <Tooltip key={tone}>
+              <TooltipTrigger asChild>
+                <ToggleGroupItem 
+                  value={tone} 
+                  className={`relative bg-tone-${tone}/20 hover:bg-tone-${tone}/40 data-[state=on]:bg-tone-${tone}`}
+                >
+                  {tone.charAt(0).toUpperCase() + tone.slice(1)}
+                  {tone === 'professional' && (
+                    <InfoIcon className="h-3 w-3 ml-1 inline-block text-gray-500" />
+                  )}
+                </ToggleGroupItem>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-[200px] text-xs">
+                {description}
+              </TooltipContent>
+            </Tooltip>
+          ))}
         </ToggleGroup>
       </div>
       
