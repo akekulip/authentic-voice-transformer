@@ -8,11 +8,11 @@ import { Button } from '@/components/ui/button';
 import { transformText } from '@/utils/transformText';
 import { Wand2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
   const [originalText, setOriginalText] = useState('');
   const [transformedText, setTransformedText] = useState('');
-  const [selectedTone, setSelectedTone] = useState<ToneType>('casual');
   const [matchOriginalTone, setMatchOriginalTone] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasFeedback, setHasFeedback] = useState(false);
@@ -40,7 +40,8 @@ const Index = () => {
     
     try {
       console.log('Starting text transformation...');
-      const result = await transformText(originalText, selectedTone, matchOriginalTone);
+      // Always use professional tone
+      const result = await transformText(originalText, 'professional', matchOriginalTone);
       setTransformedText(result);
       toast({
         title: "Transformation complete!",
@@ -71,10 +72,10 @@ const Index = () => {
         <div className="container mx-auto py-6">
           <div className="flex flex-col items-center justify-center text-center">
             <h1 className="text-3xl font-bold text-purple-dark">
-              Authentic Voice Transformer
+              Academic Content Humanizer
             </h1>
             <p className="mt-2 text-gray-600 max-w-2xl">
-              Transform AI-generated text into 100% human-sounding content with natural variations that defeats AI detection
+              Transform AI-generated academic text into 100% human-sounding scholarly content with proper citations
             </p>
           </div>
         </div>
@@ -96,9 +97,7 @@ const Index = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ToneSelector
-              selectedTone={selectedTone}
               matchOriginalTone={matchOriginalTone}
-              onToneSelect={setSelectedTone}
               onMatchOriginalToneChange={setMatchOriginalTone}
             />
             
@@ -123,7 +122,7 @@ const Index = () => {
 
       <footer className="bg-white border-t mt-auto">
         <div className="container mx-auto py-6 text-center text-sm text-gray-500">
-          <p>Authentic Voice Transformer • Make your content sound authentically human with natural imperfections</p>
+          <p>Academic Content Humanizer • Make your scholarly content sound authentically human with proper citations</p>
         </div>
       </footer>
     </div>

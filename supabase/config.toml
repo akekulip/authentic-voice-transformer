@@ -1,1 +1,8 @@
+
 project_id = "rbaudplbdainhftacixn"
+
+[functions.transform-text]
+verify_jwt = false
+
+[functions.detect-ai-content]
+verify_jwt = false
