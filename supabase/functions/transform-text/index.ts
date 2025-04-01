@@ -50,7 +50,16 @@ serve(async (req) => {
           systemMessage += `Use a relaxed, conversational style with natural contractions and varied vocabulary. Include occasional filler words, self-corrections, or tangents as a real person would.`;
           break;
         case 'professional':
-          systemMessage += `Maintain a business-appropriate tone but with natural human touches like varied sentence structures, occasional parenthetical thoughts, and more organic transitions between ideas.`;
+          systemMessage += `Create business-appropriate content but with NATURAL human touches. AVOID overly formal language that AI typically produces. Instead:
+          - Mix in occasional first-person perspectives ("I believe" or "In my view")
+          - Use varied sentence lengths, including some shorter ones
+          - Include some slightly imperfect transitions between ideas (like people really write)
+          - Use parenthetical asides for supplementary thoughts
+          - Introduce occasional casual phrases among the professional language
+          - Avoid perfect parallelism in lists and structure
+          - Occasionally start sentences with conjunctions (But, And, So)
+          - Use contractions inconsistently (sometimes do, sometimes don't)
+          - Vary your paragraph lengths unpredictably`;
           break;
         case 'empathetic':
           systemMessage += `Use a warm, understanding tone with natural fluctuations in empathy. Include thoughtful pauses, reflective questions, and personal touches.`;
@@ -71,36 +80,36 @@ serve(async (req) => {
     CRITICAL REQUIREMENTS to ensure this text passes ALL AI detection tools:
     
     1. SENTENCE TRANSFORMATION: 
-       - Rephrase and recombine sentences in creative ways. For example, turn "The sun rose. It was a beautiful morning." into "As the sun rose, it revealed a beautiful morning."
-       - Actively vary sentence openings and avoid starting multiple sentences with the same words or structures
-       - Introduce natural interruptions and informal connectors (like 'anyway', 'actually', 'you know', etc.)
+       - Actively rephrase complete sentences into different structures. For example, change "AI detection is a problem. Many writers face it." into "Many writers struggle with the problem of AI detection."
+       - Introduce sentence fragments occasionally - real humans don't always write complete sentences
+       - Vary sentence openings aggressively - analyze and ensure diverse starting words
+       - Connect ideas in unpredictable ways using conjunctions like "yet", "although", or "meanwhile"
     
     2. VOCABULARY SUBSTITUTION: 
-       - Replace common words with less predictable synonyms that still maintain meaning
-       - Avoid overused formal vocabulary and academic phrasing
-       - Introduce occasional colloquialisms where appropriate
-       - Mix precise terms with more general ones as humans naturally do
+       - Replace predictable terms with unexpected synonyms or colloquial alternatives
+       - Mix formal words with casual expressions, even in professional writing (humans are inconsistent)
+       - Introduce minor typos or word choice quirks that a human might make (1-2 per lengthy text)
+       - Avoid academic/essay-style phrasing that AI typically produces
     
     3. PATTERN DISRUPTION:
-       - Deliberately break any cadence, rhythm or repetitive patterns in paragraph structure
-       - Vary punctuation styles naturally - mix dashes, parentheses, ellipses, and semicolons
-       - Randomly include rhetorical questions in appropriate places
-       - Create occasional sentence fragments or run-ons (like humans do in natural writing)
+       - Create deliberately uneven paragraph lengths
+       - Insert mid-sentence dashes, parenthetical thoughts, or even ellipses...just like a person might
+       - Occasionally use subtle emphasis markers like italics or ALL CAPS for a word or phrase
+       - Break expected writing patterns by occasionally asking a question or making an exclamation
     
-    4. ACTIVE VOICE AND PERSONAL LANGUAGE:
-       - Convert passive voice to active voice when possible
-       - Add personal references where appropriate ("I think", "in my view", etc.)
-       - Include occasional implied emotional responses
-       - Add subjective qualifiers ("probably", "seems like", "appears to be")
+    4. HUMAN VOICE ELEMENTS:
+       - Add personal perspective markers like "honestly," "I'd say," or "in my experience" 
+       - Insert conversational hedges like "sort of" or "kind of" even in professional contexts
+       - Include small thinking-out-loud moments ("now that I think about it...")
+       - Express mild uncertainty or reconsideration of points made earlier
     
-    5. HUMAN INCONSISTENCIES:
-       - Introduce slight natural contradictions or self-corrections
-       - Add conversational hedging phrases ("sort of", "kind of", "more or less")
-       - Include minor exaggerations or generalizations that humans make
-       - Occasionally restate points with subtle differences (as humans do when emphasizing)
-       - Add harmless digressive thoughts in parentheses
+    5. AUTHENTIC IRREGULARITIES:
+       - Create minor logical inconsistencies that reflect human thought processes
+       - Use informal punctuation occasionally, like dashes instead of semicolons
+       - Include subtle self-corrections or refinements of earlier statements
+       - Allow some natural repetition of ideas but with different phrasing
     
-    6. LENGTH MATCHING: Keep the transformed text within 5% of the original text's length.
+    6. LENGTH CONTROL: Keep the transformed text within 5% of the original text's length to avoid detection.
     
     The text MUST appear to be written by a human, with all the natural irregularities and variations that entails. DO NOT explain or comment on your transformations - return ONLY the transformed text.`;
 
@@ -119,10 +128,10 @@ serve(async (req) => {
           { role: 'system', content: systemMessage },
           { role: 'user', content: text }
         ],
-        temperature: 0.92, // Slightly higher temperature for more creativity and human-like variations
-        top_p: 0.92, // Allows for more diverse word selection
-        presence_penalty: 0.7, // Stronger penalty to discourage repetitive patterns
-        frequency_penalty: 0.8, // Stronger penalty to discourage using the same phrases
+        temperature: 0.95, // Higher temperature for more creativity and unpredictability
+        top_p: 0.95, // Allows for more diverse word selection
+        presence_penalty: 0.8, // Stronger penalty to discourage repetitive patterns
+        frequency_penalty: 0.9, // Stronger penalty to discourage using the same phrases
       }),
     });
 
