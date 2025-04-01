@@ -7,6 +7,7 @@ import FeedbackButtons from '@/components/FeedbackButtons';
 import { Button } from '@/components/ui/button';
 import { transformText } from '@/utils/transformText';
 import { Wand2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 const Index = () => {
   const [originalText, setOriginalText] = useState('');
@@ -16,31 +17,38 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasFeedback, setHasFeedback] = useState(false);
 
-  // Debounce text transformation when original text changes
+  // Clear transformed text when original text changes
   useEffect(() => {
     if (!originalText.trim()) {
       setTransformedText('');
-      return;
     }
-    
-    const timer = setTimeout(() => {
-      handleTransform();
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, [originalText, selectedTone, matchOriginalTone]);
+  }, [originalText]);
 
   const handleTransform = async () => {
-    if (!originalText.trim()) return;
+    if (!originalText.trim()) {
+      toast({
+        title: "No text to transform",
+        description: "Please enter some text to transform.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsLoading(true);
     setHasFeedback(false);
     
     try {
+      console.log('Starting text transformation...');
       const result = await transformText(originalText, selectedTone, matchOriginalTone);
       setTransformedText(result);
+      toast({
+        title: "Success!",
+        description: "Your text has been transformed.",
+      });
+      console.log('Text transformation completed successfully.');
     } catch (error) {
       console.error('Error transforming text:', error);
+      // Error notification is handled in the transformText function
     } finally {
       setIsLoading(false);
     }
@@ -50,6 +58,10 @@ const Index = () => {
     // In a real app, we would send this feedback to a server
     console.log('Feedback:', isPositive ? 'positive' : 'negative');
     setHasFeedback(true);
+    toast({
+      title: "Thank you for your feedback!",
+      description: isPositive ? "We're glad you liked the result." : "We'll work on improving our transformations.",
+    });
   };
 
   return (
@@ -95,8 +107,8 @@ const Index = () => {
                 disabled={!originalText.trim() || isLoading}
                 className="bg-purple hover:bg-purple-dark w-full md:w-auto"
               >
-                <Wand2 className="mr-2 h-4 w-4" />
-                Transform Now
+                <Wand2 className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                {isLoading ? 'Transforming...' : 'Transform Now'}
               </Button>
               
               <FeedbackButtons 

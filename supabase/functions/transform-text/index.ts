@@ -25,6 +25,17 @@ serve(async (req) => {
       );
     }
 
+    console.log(`Processing text transformation: tone=${tone}, matchOriginalTone=${matchOriginalTone}`);
+    console.log(`Text length: ${text.length} characters`);
+
+    if (!openAIApiKey) {
+      console.error("OpenAI API key is not set");
+      return new Response(
+        JSON.stringify({ error: "OpenAI API key is not configured" }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
+
     // Prepare the system message based on the selected tone and whether to match original tone
     let systemMessage = `You are an expert at transforming text to sound more natural and human. `;
     
@@ -66,7 +77,7 @@ serve(async (req) => {
     
     Return ONLY the transformed text without any explanations, introductions, or commentary.`;
 
-    console.log("Sending to OpenAI with system message:", systemMessage);
+    console.log("Sending request to OpenAI");
 
     // Make the API call to OpenAI
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -93,6 +104,8 @@ serve(async (req) => {
 
     const data = await response.json();
     const transformedText = data.choices[0].message.content.trim();
+    
+    console.log("Successfully transformed text");
 
     return new Response(
       JSON.stringify({ transformedText }),
