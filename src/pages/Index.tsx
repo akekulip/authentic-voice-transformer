@@ -36,6 +36,7 @@ const Index = () => {
     
     setIsLoading(true);
     setHasFeedback(false);
+    setTransformedText(''); // Clear previous result while loading
     
     try {
       console.log('Starting text transformation...');
@@ -43,7 +44,7 @@ const Index = () => {
       setTransformedText(result);
       toast({
         title: "Success!",
-        description: "Your text has been transformed.",
+        description: "Your text has been transformed to sound 100% human-written.",
       });
       console.log('Text transformation completed successfully.');
     } catch (error) {
@@ -73,7 +74,7 @@ const Index = () => {
               Authentic Voice Transformer
             </h1>
             <p className="mt-2 text-gray-600 max-w-2xl">
-              Transform AI-generated, formal, or robotic text into natural, human-sounding content
+              Transform AI-generated, formal, or robotic text into 100% human-sounding content that passes AI detection
             </p>
           </div>
         </div>
@@ -122,7 +123,7 @@ const Index = () => {
 
       <footer className="bg-white border-t mt-auto">
         <div className="container mx-auto py-6 text-center text-sm text-gray-500">
-          <p>Authentic Voice Transformer • Make your content sound human</p>
+          <p>Authentic Voice Transformer • Make your content sound 100% human</p>
         </div>
       </footer>
     </div>

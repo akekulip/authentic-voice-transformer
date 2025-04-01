@@ -37,6 +37,19 @@ export const transformText = async (
       throw new Error(`Failed to transform text: ${data.error}`);
     }
     
+    // Verify the transformed text length is similar to the original
+    const lengthDifference = Math.abs(text.length - data.transformedText.length);
+    const percentDifference = (lengthDifference / text.length) * 100;
+    
+    if (percentDifference > 15) {
+      console.warn(`Warning: Transformed text length differs significantly from original (${percentDifference.toFixed(2)}% difference)`);
+      toast({
+        title: "Length Warning",
+        description: "The transformed text length differs significantly from the original. This might be noticeable.",
+        variant: "default",
+      });
+    }
+    
     return data.transformedText || '';
   } catch (error) {
     console.error('Error in transformText:', error);

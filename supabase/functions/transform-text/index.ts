@@ -36,44 +36,46 @@ serve(async (req) => {
       );
     }
 
-    // Prepare the system message based on the selected tone and whether to match original tone
-    let systemMessage = `You are an expert at transforming text to sound more natural and human. `;
+    // Enhanced system message for more human-like text
+    let systemMessage = `You are an expert at transforming text to sound 100% human-written while maintaining approximately the same length as the original text. `;
     
     if (matchOriginalTone) {
-      systemMessage += `Make subtle refinements to make the text sound more natural while preserving the original tone. `;
-      systemMessage += `The changes should be minimal but impactful, maintaining the overall style and formality of the original text.`;
+      systemMessage += `Make subtle refinements to make the text sound more natural and genuinely human-written while preserving the original tone. `;
+      systemMessage += `The changes should be minimal yet effective, maintaining the original style, length and formality level.`;
     } else {
-      systemMessage += `Transform the following text to sound natural and conversational in a ${tone} tone. `;
+      systemMessage += `Transform the following text to sound genuinely human-written in a ${tone} tone while keeping approximately the same length. `;
       
       switch (tone) {
         case 'casual':
-          systemMessage += `Use contractions, simpler vocabulary, and a relaxed structure. Include occasional informal expressions and a conversational flow.`;
+          systemMessage += `Use contractions, simpler vocabulary, a relaxed structure, and occasional conversational fillers (um, like, you know) where appropriate. Add human imperfections and varied sentence patterns.`;
           break;
         case 'professional':
-          systemMessage += `Maintain a business-appropriate tone with clear, concise language. Be formal but not overly stiff, and ensure the text conveys competence and authority.`;
+          systemMessage += `Maintain a business-appropriate tone with clear language, but add subtle human touches. Vary sentence length, use transitional phrases naturally, and include occasional parenthetical expressions.`;
           break;
         case 'empathetic':
-          systemMessage += `Use warm, understanding language that acknowledges emotions. Include supportive phrases and a compassionate tone.`;
+          systemMessage += `Use warm, understanding language that acknowledges emotions with natural variations in emphasis. Include thoughtful pauses, reflective questions, and personal touches that a real human would use.`;
           break;
         case 'witty':
-          systemMessage += `Add clever wordplay, light humor, and engaging expressions. Be smart but not sarcastic, with a touch of playfulness.`;
+          systemMessage += `Add clever wordplay, light humor, and engaging expressions that sound natural, not forced. Include occasional tangential thoughts or asides that a witty person might actually make.`;
           break;
         case 'friendly':
-          systemMessage += `Write as if speaking to a friend, with a warm, inviting tone. Use simple language, personal touches, and an upbeat attitude.`;
+          systemMessage += `Write as if speaking to a friend, with a warm tone, using colloquialisms, personal anecdotes, and references that make the text feel like a real conversation.`;
           break;
         default:
-          systemMessage += `Make it sound natural and conversational.`;
+          systemMessage += `Make it sound natural, conversational and distinctly human.`;
       }
     }
 
-    // Add specific instructions for the transformation
-    systemMessage += ` Improve the text by:
-    1. Using natural contractions where appropriate (e.g., "don't" instead of "do not")
-    2. Varying sentence structure and length
-    3. Adding transition words for flow
-    4. Using more active voice
-    5. Incorporating conversational phrases and expressions
-    6. Removing overly formal or robotic language
+    // Additional instructions for human-like qualities and avoiding AI detection
+    systemMessage += ` 
+    Important: The transformed text MUST pass AI detection tools and appear 100% human-written:
+    1. Vary sentence structure, length, and complexity naturally (short, medium, and long)
+    2. Include subtle human inconsistencies and imperfections (occasional wordiness, thoughtful pauses, self-corrections)
+    3. Use natural speech patterns with contractions, fillers, and conversational connectors
+    4. Avoid perfectly balanced arguments and overly consistent paragraph structures
+    5. Include conversational touches like rhetorical questions, personal opinions, or light digressions
+    6. Maintain the approximate original text length (±10%)
+    7. Add personality through occasional idioms, analogies, or cultural references when appropriate
     
     Return ONLY the transformed text without any explanations, introductions, or commentary.`;
 
@@ -87,12 +89,14 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini', // Using a more capable but cost-effective model
+        model: 'gpt-4o', // Using the more advanced model for better human-like transformations
         messages: [
           { role: 'system', content: systemMessage },
           { role: 'user', content: text }
         ],
-        temperature: matchOriginalTone ? 0.3 : 0.7, // Lower temperature for matching original tone
+        temperature: matchOriginalTone ? 0.7 : 0.9, // Higher temperature for more creativity and human-like variations
+        presence_penalty: 0.2, // Slight penalty to discourage repetitive patterns
+        frequency_penalty: 0.3, // Discourages using the same phrases too often
       }),
     });
 
@@ -105,7 +109,8 @@ serve(async (req) => {
     const data = await response.json();
     const transformedText = data.choices[0].message.content.trim();
     
-    console.log("Successfully transformed text");
+    console.log(`Successfully transformed text. Original length: ${text.length}, New length: ${transformedText.length}`);
+    console.log(`Length difference: ${Math.abs(text.length - transformedText.length)} characters (${Math.round(Math.abs(text.length - transformedText.length) / text.length * 100)}%)`);
 
     return new Response(
       JSON.stringify({ transformedText }),
