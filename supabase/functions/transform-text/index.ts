@@ -36,7 +36,7 @@ serve(async (req) => {
       );
     }
 
-    // Enhanced system message focused on human-like variation
+    // Enhanced system message with more specific instructions on humanization techniques
     let systemMessage = `You are an expert at transforming text to sound 100% human-written. `;
     
     if (matchOriginalTone) {
@@ -66,26 +66,43 @@ serve(async (req) => {
       }
     }
 
-    // Critical instructions for human-like qualities to bypass AI detection
+    // Significantly enhanced humanization instructions
     systemMessage += ` 
     CRITICAL REQUIREMENTS to ensure this text passes ALL AI detection tools:
     
-    1. SENTENCE STRUCTURE: Create irregular, unpredictable variation in sentence length and structure. Mix short, punchy sentences with medium ones and occasionally longer, more complex ones with natural asides or parenthetical thoughts.
+    1. SENTENCE TRANSFORMATION: 
+       - Rephrase and recombine sentences in creative ways. For example, turn "The sun rose. It was a beautiful morning." into "As the sun rose, it revealed a beautiful morning."
+       - Actively vary sentence openings and avoid starting multiple sentences with the same words or structures
+       - Introduce natural interruptions and informal connectors (like 'anyway', 'actually', 'you know', etc.)
     
-    2. VOCABULARY: Use less predictable word choices that still fit the context. Avoid perfectly precise vocabulary in favor of more natural alternatives. Include occasional casual or slightly imprecise phrasing that's common in human writing.
+    2. VOCABULARY SUBSTITUTION: 
+       - Replace common words with less predictable synonyms that still maintain meaning
+       - Avoid overused formal vocabulary and academic phrasing
+       - Introduce occasional colloquialisms where appropriate
+       - Mix precise terms with more general ones as humans naturally do
     
-    3. RHYTHM VARIATION: Deliberately break patterns that AI tends to create. Vary paragraph structures, transition words, and punctuation styles in unpredictable ways. Avoid repeating syntactic patterns.
+    3. PATTERN DISRUPTION:
+       - Deliberately break any cadence, rhythm or repetitive patterns in paragraph structure
+       - Vary punctuation styles naturally - mix dashes, parentheses, ellipses, and semicolons
+       - Randomly include rhetorical questions in appropriate places
+       - Create occasional sentence fragments or run-ons (like humans do in natural writing)
     
-    4. HUMAN IMPERFECTIONS: Introduce subtle natural elements like:
-       - Occasional wordiness where a human might elaborate unnecessarily
-       - Natural self-referential phrases ("I think," "In my opinion," etc.) where appropriate
-       - Subtle opinion shifts or slight contradictions that humans naturally make
-       - Light digressions or tangential thoughts
-       - Conversational bridges between ideas ("anyway," "so," "now," etc.)
+    4. ACTIVE VOICE AND PERSONAL LANGUAGE:
+       - Convert passive voice to active voice when possible
+       - Add personal references where appropriate ("I think", "in my view", etc.)
+       - Include occasional implied emotional responses
+       - Add subjective qualifiers ("probably", "seems like", "appears to be")
     
-    5. LENGTH MATCHING: Keep the transformed text within 5% of the original text's length.
+    5. HUMAN INCONSISTENCIES:
+       - Introduce slight natural contradictions or self-corrections
+       - Add conversational hedging phrases ("sort of", "kind of", "more or less")
+       - Include minor exaggerations or generalizations that humans make
+       - Occasionally restate points with subtle differences (as humans do when emphasizing)
+       - Add harmless digressive thoughts in parentheses
     
-    The text MUST read as if written by a human hand, not an AI. Return ONLY the transformed text without any explanations.`;
+    6. LENGTH MATCHING: Keep the transformed text within 5% of the original text's length.
+    
+    The text MUST appear to be written by a human, with all the natural irregularities and variations that entails. DO NOT explain or comment on your transformations - return ONLY the transformed text.`;
 
     console.log("Sending request to OpenAI");
 
@@ -102,10 +119,10 @@ serve(async (req) => {
           { role: 'system', content: systemMessage },
           { role: 'user', content: text }
         ],
-        temperature: 0.9, // Higher temperature for more creativity and human-like variations
-        top_p: 0.9, // Allows for more diverse word selection
-        presence_penalty: 0.6, // Stronger penalty to discourage repetitive patterns
-        frequency_penalty: 0.7, // Stronger penalty to discourage using the same phrases
+        temperature: 0.92, // Slightly higher temperature for more creativity and human-like variations
+        top_p: 0.92, // Allows for more diverse word selection
+        presence_penalty: 0.7, // Stronger penalty to discourage repetitive patterns
+        frequency_penalty: 0.8, // Stronger penalty to discourage using the same phrases
       }),
     });
 
