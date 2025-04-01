@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,12 +40,12 @@ const TransformedOutput: React.FC<TransformedOutputProps> = ({ transformedText, 
       setLoadingProgress(100);
     }
 
+    // Cleanup function
     return () => {
       if (interval) clearInterval(interval);
       if (!isLoading) {
-        // Reset to 0 after a delay when loading finishes
-        const timeout = setTimeout(() => setLoadingProgress(0), 1000);
-        return () => clearTimeout(timeout);
+        // This setTimeout doesn't need to return anything
+        setTimeout(() => setLoadingProgress(0), 1000);
       }
     };
   }, [isLoading]);
